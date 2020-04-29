@@ -1,0 +1,79 @@
+Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+
+思路：
+递归，从根节点到叶节点。
+
+第一次提交：
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> m_ans;
+    int m_sum;
+    
+    vector<vector<int>> pathSum(TreeNode* root, int sum) {
+        m_sum = sum;
+        vector<int> path;
+        allPathSum(root, path, 0);
+        return m_ans;
+    }
+    void allPathSum(TreeNode *node, vector<int> path, int sum)
+    {
+        if(node!=nullptr)
+        {
+            path.push_back(node->val);
+            sum += node->val;
+            if(node->left == nullptr && node->right == nullptr)
+            {
+                if(sum == m_sum) m_ans.push_back(path);
+                else return;
+            }
+            allPathSum(node->left, path, sum);
+            allPathSum(node->right, path, sum);
+        }
+    }
+};
+时间复杂度：O(n^2)
+空间复杂度：O(n^2)
+
+优化：每次递归都要复制vector<int> path数组，耗费时间和空间。每次递归都会把当前节点的值加入路径数组，继续向后递归，递归完成后可以弹出当前节点。
+
+class Solution {
+public:
+    vector<vector<int>> m_ans;
+    int m_sum;
+    vector<int> m_path;
+    
+    vector<vector<int>> pathSum(TreeNode* root, int sum) {
+        m_sum = sum;
+        allPathSum(root, 0);
+        return m_ans;
+    }
+    void allPathSum(TreeNode *node, int sum)
+    {
+        if(node!=nullptr)
+        {
+            m_path.push_back(node->val);
+            sum += node->val;
+            if(node->left == nullptr && node->right == nullptr)
+            {
+                if(sum == m_sum) m_ans.push_back(m_path);
+            }
+            else
+            {
+                allPathSum(node->left, sum);
+                allPathSum(node->right, sum);
+            }
+            m_path.pop_back();
+        }
+    }
+};
+时间复杂度：O(n)
+空间复杂度：O(n)
